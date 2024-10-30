@@ -11,6 +11,7 @@ type Log struct {
 	Route       string `gorm:"null"`
 	Message     string `gorm:"not null"`
 	Exception   string `gorm:"null"`
+	IpAddress   string `gorm:"null"`
 
 	LogLevel LogLevel `gorm:"constraint:OnUpdate:CASCADE,OnDelete:RESTRICT;"`
 }

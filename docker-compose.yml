@@ -1,0 +1,15 @@
+services:
+  dev:
+    hostname: api_log
+    container_name: api_log
+    build:
+      context: .
+      dockerfile: ./docker/Dockerfile
+    env_file:
+      - ./.env
+    volumes:
+      - .:/app
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    network_mode: "host"
+    command: ["air"]
