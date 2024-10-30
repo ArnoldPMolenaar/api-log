@@ -1,8 +1,5 @@
 package models
 
-import "gorm.io/gorm"
-
 type LogLevel struct {
-	gorm.Model
-	Name string `gorm:"primaryKey"`
+	Name string `gorm:"uniqueIndex:idx_name;primaryKey;not null;autoIncrement:false"`
 }
