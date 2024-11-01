@@ -26,8 +26,6 @@ func main() {
 		panic(fmt.Sprintf("Could not connect to the database: %v", err))
 	}
 
-	// Register a route for API Docs (Scalar).
-	// TODO: routes.ScalarRoute(app)
 	// Register a private routes for app.
 	routes.PrivateRoutes(app)
 	// Register route for 404 Error.
