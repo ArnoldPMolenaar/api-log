@@ -18,7 +18,12 @@ func CreateLog(c *fiber.Ctx) error {
 	}
 
 	if (log.Level == enums.Error.String() || log.Level == enums.Panic.String()) && log.Exception == "" {
-		return errors.ErrorResponse(c, fiber.StatusBadRequest, errors.Validator, "Exception field is required for error and panic logs.")
+		return errors.ErrorResponse(
+			c,
+			fiber.StatusBadRequest,
+			errors.Validator,
+			"Exception field is required for error and panic logs.",
+		)
 	}
 
 	// Validate log fields.
