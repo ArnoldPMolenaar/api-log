@@ -1,6 +1,7 @@
 package configs
 
 import (
+	"api-log/main/src/utils"
 	"github.com/gofiber/fiber/v2"
 	"os"
 	"strconv"
@@ -15,6 +16,7 @@ func FiberConfig() fiber.Config {
 
 	// Return Fiber configuration.
 	return fiber.Config{
-		ReadTimeout: time.Second * time.Duration(readTimeoutSecondsCount),
+		ReadTimeout:  time.Second * time.Duration(readTimeoutSecondsCount),
+		ErrorHandler: utils.ErrorHandler,
 	}
 }

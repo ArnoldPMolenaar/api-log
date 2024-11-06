@@ -4,11 +4,13 @@ import "github.com/gofiber/fiber/v2"
 
 // Define error codes as constants.
 const (
-	NotFound     = "notFound"
-	BodyParse    = "bodyParse"
-	Validator    = "validator"
-	CreateLog    = "createLog"
-	Unauthorized = "unauthorized"
+	NotFound        = "notFound"
+	BodyParse       = "bodyParse"
+	Validator       = "validator"
+	CreateLog       = "createLog"
+	Unauthorized    = "unauthorized"
+	PaginationQuery = "paginationQuery"
+	GetLogs         = "getLogs"
 	// Add more error codes as needed.
 )
 

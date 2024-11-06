@@ -4,6 +4,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/logger"
+	"github.com/gofiber/fiber/v2/middleware/recover"
 )
 
 // FiberMiddleware provide Fiber's built-in middlewares.
@@ -14,5 +15,7 @@ func FiberMiddleware(a *fiber.App) {
 		cors.New(),
 		// Add simple logger.
 		logger.New(),
+		// Catch a panic and return a 500 response.
+		recover.New(),
 	)
 }
