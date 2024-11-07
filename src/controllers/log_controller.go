@@ -52,8 +52,11 @@ func GetLogs(c *fiber.Ctx) error {
 		"level":       true,
 		"environment": true,
 		"version":     true,
+		"created_at":  true,
+		"route":       true,
 		"message":     true,
-		"created":     true,
+		"exception":   true,
+		"ip_address":  true,
 	}
 
 	queryFunc := utils.PaginationQuery(values, allowedColumns)

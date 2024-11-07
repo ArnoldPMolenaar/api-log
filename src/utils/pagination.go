@@ -7,6 +7,7 @@ import (
 	"gorm.io/gorm"
 	"math"
 	"strings"
+	"time"
 )
 
 // PaginationModel struct is used to return paginated data.
@@ -59,21 +60,10 @@ func CreatePaginationModel(limit int, page int, pageCount int, total int, result
 // search_like: for |where ... LIKE ... AND| query = search_like=column:value,column:value =>
 // search_like=firstname:john,lastname:doe
 func parseSearchLike(params []byte, db *gorm.DB, allowedColumns map[string]bool) *gorm.DB {
-	var statements []string
 	paramMap := parseSingleValueParams(db, string(params), allowedColumns)
 
 	for key, value := range paramMap {
-		statements = append(statements, fmt.Sprintf("%s ILIKE '%%%s%%'", key, value))
-	}
-
-	/*
-		for key, value := range paramMap {
-			db = db.Where(fmt.Sprintf("%s ILIKE ?", key), fmt.Sprintf("%%%s%%", value))
-		}
-	*/
-
-	if len(statements) > 0 {
-		db = db.Where(strings.Join(statements, " AND "))
+		db = db.Where(fmt.Sprintf("%s ILIKE ?", key), fmt.Sprintf("%%%s%%", value))
 	}
 
 	return db
@@ -110,12 +100,16 @@ func parseSearchLikeOr(params []byte, db *gorm.DB, allowedColumns map[string]boo
 
 // search_eq_or: for |where ... = ... OR| query = search_eq_or=column:value,column:value =>
 // search_or_eq=firstname:john,lastname:doe
-// TODO: Same issues as parseSearchLikeOr.
 func parseSearchEqOr(params []byte, db *gorm.DB, allowedColumns map[string]bool) *gorm.DB {
+	var statements []string
 	paramMap := parseSingleValueParams(db, string(params), allowedColumns)
 
 	for key, value := range paramMap {
-		db = db.Or(fmt.Sprintf("%s = ?", key), value)
+		statements = append(statements, fmt.Sprintf("%s = '%%%s%%'", key, value))
+	}
+
+	if len(statements) > 0 {
+		db = db.Where(strings.Join(statements, " OR "))
 	}
 
 	return db
@@ -139,12 +133,17 @@ func parseSearchBetween(params []byte, db *gorm.DB, allowedColumns map[string]bo
 
 	for key, value := range paramMap {
 		if len(value) != 2 {
-			err := db.AddError(errors.New("not exactly two values for between query"))
-			if err != nil {
-				return nil
-			}
+			_ = db.AddError(errors.New("not exactly two values for between query"))
 		}
-		db = db.Where(fmt.Sprintf("%s BETWEEN ? AND ?", key), value[0], value[1])
+
+		// Parse the date-time strings
+		startTime, err1 := time.Parse(time.RFC3339, value[0])
+		endTime, err2 := time.Parse(time.RFC3339, value[1])
+		if err1 != nil || err2 != nil {
+			_ = db.AddError(errors.New("invalid date-time format"))
+		}
+
+		db = db.Where(fmt.Sprintf("%s BETWEEN ? AND ?", key), startTime, endTime)
 	}
 
 	return db
@@ -160,10 +159,7 @@ func parseSortBy(params []byte, db *gorm.DB, allowedColumns map[string]bool) *go
 		} else if value == "asc" {
 			db = db.Order(fmt.Sprintf("%s ASC", key))
 		} else {
-			err := db.AddError(errors.New("order not asc or desc"))
-			if err != nil {
-				return nil
-			}
+			_ = db.AddError(errors.New("order not asc or desc"))
 		}
 	}
 
@@ -183,16 +179,10 @@ func parseSingleValueParams(db *gorm.DB, params string, allowedColumns map[strin
 			isAllowed := allowedColumns[valuePairs[0]]
 
 			if !canParse {
-				err := db.AddError(errors.New("cannot parse invalid format"))
-				if err != nil {
-					return nil
-				}
+				_ = db.AddError(errors.New("cannot parse invalid format"))
 			}
 			if !isAllowed {
-				err := db.AddError(errors.New("column not allowed"))
-				if err != nil {
-					return nil
-				}
+				_ = db.AddError(errors.New("column not allowed"))
 			}
 			if isAllowed && canParse {
 				paramMap[valuePairs[0]] = valuePairs[1]
@@ -216,19 +206,13 @@ func parseMultiValueParams(db *gorm.DB, params string, allowedColumns map[string
 			isAllowed := allowedColumns[valuePairs[0]]
 
 			if !canParse {
-				err := db.AddError(errors.New("cannot parse invalid format"))
-				if err != nil {
-					return nil
-				}
+				_ = db.AddError(errors.New("cannot parse invalid format"))
 			}
 			if !isAllowed {
-				err := db.AddError(errors.New("column not allowed"))
-				if err != nil {
-					return nil
-				}
+				_ = db.AddError(errors.New("column not allowed"))
 			}
 			if isAllowed && canParse {
-				paramMap[valuePairs[0]] = strings.Split(valuePairs[1], ".")
+				paramMap[valuePairs[0]] = strings.Split(valuePairs[1], ";")
 			}
 		}
 	}
