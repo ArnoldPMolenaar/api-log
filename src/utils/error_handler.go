@@ -15,7 +15,7 @@ type ErrorResponse struct {
 func ErrorHandler(c *fiber.Ctx, err error) error {
 	// Default to 500 Internal Server Error.
 	code := fiber.StatusInternalServerError
-	message := "Internal Server Error"
+	var message string
 
 	// Check if it's a Fiber error.
 	var e *fiber.Error

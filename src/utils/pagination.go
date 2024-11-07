@@ -37,17 +37,17 @@ func PaginationQuery(args *fasthttp.Args, allowedColumns map[string]bool) func(*
 }
 
 // PaginationCount calculates the page count with the given resultCount of a pagination query and a page limit.
-func PaginationCount(resultCount int, limit int) int {
+func PaginationCount(resultCount, limit int) int {
 	return int(math.Ceil(float64(resultCount) / float64(limit)))
 }
 
 // PaginationOffset calculates the offset with the page and limit params
-func PaginationOffset(page int, limit int) int {
+func PaginationOffset(page, limit int) int {
 	return (page - 1) * limit
 }
 
 // CreatePaginationModel is a helper to be able to return a pagination model in a single line
-func CreatePaginationModel(limit int, page int, pageCount int, total int, result interface{}) PaginationModel {
+func CreatePaginationModel(limit, page, pageCount, total int, result interface{}) PaginationModel {
 	return PaginationModel{
 		Limit:     limit,
 		Page:      page,
@@ -154,11 +154,12 @@ func parseSortBy(params []byte, db *gorm.DB, allowedColumns map[string]bool) *go
 	paramMap := parseSingleValueParams(db, string(params), allowedColumns)
 
 	for key, value := range paramMap {
-		if value == "desc" {
+		switch value {
+		case "desc":
 			db = db.Order(fmt.Sprintf("%s DESC", key))
-		} else if value == "asc" {
+		case "asc":
 			db = db.Order(fmt.Sprintf("%s ASC", key))
-		} else {
+		default:
 			_ = db.AddError(errors.New("order not asc or desc"))
 		}
 	}
