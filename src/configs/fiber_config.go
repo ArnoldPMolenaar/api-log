@@ -1,7 +1,7 @@
 package configs
 
 import (
-	"api-log/main/src/utils"
+	"github.com/ArnoldPMolenaar/api-utils/utils"
 	"github.com/gofiber/fiber/v2"
 	"os"
 	"strconv"

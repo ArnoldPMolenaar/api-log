@@ -2,7 +2,7 @@ package routes
 
 import (
 	"api-log/main/src/controllers"
-	"api-log/main/src/middleware"
+	"github.com/ArnoldPMolenaar/api-utils/middleware"
 	"github.com/gofiber/fiber/v2"
 )
 

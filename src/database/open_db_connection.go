@@ -1,6 +1,9 @@
 package database
 
-import "gorm.io/gorm"
+import (
+	"github.com/ArnoldPMolenaar/api-utils/database"
+	"gorm.io/gorm"
+)
 
 var Pg *gorm.DB
 
@@ -8,7 +11,7 @@ var Pg *gorm.DB
 // Also tries to migrate the database schema.
 func OpenDBConnection() error {
 	// Open connection to database.
-	db, err := PostgresSQLConnection()
+	db, err := database.PostgresSQLConnection()
 	if err != nil {
 		return err
 	}

@@ -5,7 +5,9 @@ import (
 	"api-log/main/src/enums"
 	"api-log/main/src/errors"
 	"api-log/main/src/models"
-	"api-log/main/src/utils"
+	errorutil "github.com/ArnoldPMolenaar/api-utils/errors"
+	"github.com/ArnoldPMolenaar/api-utils/pagination"
+	"github.com/ArnoldPMolenaar/api-utils/utils"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -15,11 +17,11 @@ func CreateLog(c *fiber.Ctx) error {
 
 	// Check, if received JSON data is parsed.
 	if err := c.BodyParser(log); err != nil {
-		return errors.ErrorResponse(c, fiber.StatusBadRequest, errors.BodyParse, err.Error())
+		return errorutil.Response(c, fiber.StatusBadRequest, errors.BodyParse, err.Error())
 	}
 
 	if (log.Level == enums.Error.String() || log.Level == enums.Panic.String()) && log.Exception == "" {
-		return errors.ErrorResponse(
+		return errorutil.Response(
 			c,
 			fiber.StatusBadRequest,
 			errors.Validator,
@@ -30,13 +32,13 @@ func CreateLog(c *fiber.Ctx) error {
 	// Validate log fields.
 	validate := utils.NewValidator()
 	if err := validate.Struct(log); err != nil {
-		return errors.ErrorResponse(c, fiber.StatusBadRequest, errors.Validator, utils.ValidatorErrors(err))
+		return errorutil.Response(c, fiber.StatusBadRequest, errors.Validator, utils.ValidatorErrors(err))
 	}
 
 	// Save log to database.
 	result := database.Pg.Create(&log)
 	if result.Error != nil {
-		return errors.ErrorResponse(c, fiber.StatusInternalServerError, errors.CreateLog, result.Error.Error())
+		return errorutil.Response(c, fiber.StatusInternalServerError, errors.CreateLog, result.Error.Error())
 	}
 
 	// Return HTTP 200 status and JSON response.
@@ -59,7 +61,8 @@ func GetLogs(c *fiber.Ctx) error {
 		"ip_address":  true,
 	}
 
-	queryFunc := utils.PaginationQuery(values, allowedColumns)
+	queryFunc := pagination.Query(values, allowedColumns)
+	sortFunc := pagination.Sort(values, allowedColumns)
 	page := c.QueryInt("page", 1)
 	if page < 1 {
 		page = 1
@@ -68,18 +71,18 @@ func GetLogs(c *fiber.Ctx) error {
 	if limit < 1 {
 		limit = 10
 	}
-	offset := utils.PaginationOffset(page, limit)
+	offset := pagination.Offset(page, limit)
 
-	db := database.Pg.Scopes(queryFunc).Limit(limit).Offset(offset).Find(&logs)
+	db := database.Pg.Scopes(queryFunc, sortFunc).Limit(limit).Offset(offset).Find(&logs)
 	if db.Error != nil {
-		return errors.ErrorResponse(c, fiber.StatusInternalServerError, errors.GetLogs, db.Error.Error())
+		return errorutil.Response(c, fiber.StatusInternalServerError, errors.GetLogs, db.Error.Error())
 	}
 
 	total := int64(0)
 	database.Pg.Scopes(queryFunc).Model(&models.Log{}).Count(&total)
-	pageCount := utils.PaginationCount(int(total), limit)
+	pageCount := pagination.Count(int(total), limit)
 
-	paginationModel := utils.CreatePaginationModel(limit, page, pageCount, int(total), logs)
+	paginationModel := pagination.CreatePaginationModel(limit, page, pageCount, int(total), logs)
 
 	return c.Status(fiber.StatusOK).JSON(paginationModel)
 }
