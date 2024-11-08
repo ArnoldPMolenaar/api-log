@@ -70,13 +70,13 @@ func GetLogs(c *fiber.Ctx) error {
 	}
 	offset := utils.PaginationOffset(page, limit)
 
-	db := database.Pg.Debug().Scopes(queryFunc).Limit(limit).Offset(offset).Find(&logs)
+	db := database.Pg.Scopes(queryFunc).Limit(limit).Offset(offset).Find(&logs)
 	if db.Error != nil {
 		return errors.ErrorResponse(c, fiber.StatusInternalServerError, errors.GetLogs, db.Error.Error())
 	}
 
 	total := int64(0)
-	database.Pg.Debug().Scopes(queryFunc).Model(&models.Log{}).Count(&total)
+	database.Pg.Scopes(queryFunc).Model(&models.Log{}).Count(&total)
 	pageCount := utils.PaginationCount(int(total), limit)
 
 	paginationModel := utils.CreatePaginationModel(limit, page, pageCount, int(total), logs)

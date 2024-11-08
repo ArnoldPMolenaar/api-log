@@ -84,15 +84,17 @@ func parseSearchEq(params []byte, db *gorm.DB, allowedColumns map[string]bool) *
 // search_like_or: for |where ... like ... OR| query = search_like_or=column:value,column:value =>
 // search_or_like=firstname:john,lastname:doe
 func parseSearchLikeOr(params []byte, db *gorm.DB, allowedColumns map[string]bool) *gorm.DB {
-	var statements []string
+	var conditions []string
+	var values []interface{}
 	paramMap := parseSingleValueParams(db, string(params), allowedColumns)
 
 	for key, value := range paramMap {
-		statements = append(statements, fmt.Sprintf("%s ILIKE '%%%s%%'", key, value))
+		conditions = append(conditions, fmt.Sprintf("%s ILIKE ?", key))
+		values = append(values, fmt.Sprintf("%%%s%%", value))
 	}
 
-	if len(statements) > 0 {
-		db = db.Where(strings.Join(statements, " OR "))
+	if len(conditions) > 0 {
+		db = db.Where(strings.Join(conditions, " OR "), values...)
 	}
 
 	return db
@@ -101,15 +103,17 @@ func parseSearchLikeOr(params []byte, db *gorm.DB, allowedColumns map[string]boo
 // search_eq_or: for |where ... = ... OR| query = search_eq_or=column:value,column:value =>
 // search_or_eq=firstname:john,lastname:doe
 func parseSearchEqOr(params []byte, db *gorm.DB, allowedColumns map[string]bool) *gorm.DB {
-	var statements []string
+	var conditions []string
+	var values []interface{}
 	paramMap := parseSingleValueParams(db, string(params), allowedColumns)
 
 	for key, value := range paramMap {
-		statements = append(statements, fmt.Sprintf("%s = '%%%s%%'", key, value))
+		conditions = append(conditions, fmt.Sprintf("%s = ?", key))
+		values = append(values, value)
 	}
 
-	if len(statements) > 0 {
-		db = db.Where(strings.Join(statements, " OR "))
+	if len(conditions) > 0 {
+		db = db.Where(strings.Join(conditions, " OR "), values...)
 	}
 
 	return db
