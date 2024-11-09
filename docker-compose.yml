@@ -1,10 +1,10 @@
 services:
   dev:
-    hostname: api_log
-    container_name: api_log
+    hostname: api_log_dev
+    container_name: api_log_dev
     build:
       context: .
-      dockerfile: ./docker/Dockerfile
+      dockerfile: docker/development.dockerfile
     env_file:
       - ./.env
     volumes:
@@ -13,3 +13,17 @@ services:
       - "host.docker.internal:host-gateway"
     network_mode: "host"
     command: ["air"]
+  prod:
+    hostname: api_log_prod
+    container_name: api_log_prod
+    build:
+      context: .
+      dockerfile: docker/production.dockerfile
+    env_file:
+      - ./.env
+    volumes:
+      - .:/build
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    network_mode: "host"
+    command: ["/api"]
