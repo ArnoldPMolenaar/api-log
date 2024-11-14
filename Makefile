@@ -1,6 +1,6 @@
 .PHONY: clean critic security lint
 
-APP_NAME = log-api
+APP_NAME = api-log
 BUILD_DIR = $(PWD)/build
 
 clean:
