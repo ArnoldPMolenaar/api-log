@@ -6,9 +6,9 @@ type LogLevel string
 // Define constants for the log levels.
 const (
 	Debug   LogLevel = "Debug"
-	Info             = "Info"
-	Success          = "Success"
-	Warning          = "Warning"
-	Error            = "Error"
-	Panic            = "panic"
+	Info    LogLevel = "Info"
+	Success LogLevel = "Success"
+	Warning LogLevel = "Warning"
+	Error   LogLevel = "Error"
+	Panic   LogLevel = "panic"
 )
