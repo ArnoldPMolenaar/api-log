@@ -1,19 +1,14 @@
 package enums
 
 // LogLevel is a custom type for log levels.
-type LogLevel int
+type LogLevel string
 
 // Define constants for the log levels.
 const (
-	Debug LogLevel = iota
-	Info
-	Success
-	Warning
-	Error
-	Panic
+	Debug   LogLevel = "Debug"
+	Info             = "Info"
+	Success          = "Success"
+	Warning          = "Warning"
+	Error            = "Error"
+	Panic            = "panic"
 )
-
-// String returns the string representation of the LogLevel.
-func (l LogLevel) String() string {
-	return [...]string{"Debug", "Info", "Success", "Warning", "Error", "Panic"}[l]
-}
