@@ -20,7 +20,7 @@ func CreateLog(c *fiber.Ctx) error {
 		return errorutil.Response(c, fiber.StatusBadRequest, errors.BodyParse, err.Error())
 	}
 
-	if (log.Level == enums.Error || log.Level == enums.Panic) && log.Exception == "" {
+	if (log.Level == enums.Error.String() || log.Level == enums.Panic.String()) && log.Exception == "" {
 		return errorutil.Response(
 			c,
 			fiber.StatusBadRequest,

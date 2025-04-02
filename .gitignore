@@ -7,3 +7,5 @@ tmp/
 
 # Environment variables
 .env
+.env.dev
+.env.prod

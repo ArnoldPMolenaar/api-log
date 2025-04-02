@@ -12,3 +12,7 @@ const (
 	Error   LogLevel = "Error"
 	Panic   LogLevel = "panic"
 )
+
+func (l LogLevel) String() string {
+	return string(l)
+}
