@@ -21,7 +21,7 @@ func CreateLog(c *fiber.Ctx) error {
 		return errorutil.Response(c, fiber.StatusBadRequest, errors.BodyParse, err.Error())
 	}
 
-	if (log.Level == enums.Error.String() || log.Level == enums.Panic.String()) && log.Exception == "" {
+	if (log.Level == enums.Error.String() || log.Level == enums.Panic.String()) && *log.Exception == "" {
 		return errorutil.Response(
 			c,
 			fiber.StatusBadRequest,
@@ -37,7 +37,7 @@ func CreateLog(c *fiber.Ctx) error {
 	}
 
 	// Check if app exists.
-	if available, err := services.IsAppAvailable(log.AppName); err != nil {
+	if available, err := services.IsAppAvailable(*log.AppName); err != nil {
 		return errorutil.Response(c, fiber.StatusInternalServerError, errorutil.QueryError, err.Error())
 	} else if !available {
 		return errorutil.Response(c, fiber.StatusBadRequest, errors.AppExists, "AppName does not exist.")
