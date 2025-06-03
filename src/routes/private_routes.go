@@ -11,6 +11,9 @@ func PrivateRoutes(a *fiber.App) {
 	// Create protected routes group.
 	route := a.Group("/v1", middleware.MachineProtected())
 
+	// Register route for /v1/apps.
+	route.Post("/apps", controllers.CreateApp)
+
 	// Routes for GET method:
 	route.Get("/logs", controllers.GetLogs)
 

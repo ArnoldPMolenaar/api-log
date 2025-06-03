@@ -5,6 +5,7 @@ import (
 	"api-log/main/src/enums"
 	"api-log/main/src/errors"
 	"api-log/main/src/models"
+	"api-log/main/src/services"
 	errorutil "github.com/ArnoldPMolenaar/api-utils/errors"
 	"github.com/ArnoldPMolenaar/api-utils/pagination"
 	"github.com/ArnoldPMolenaar/api-utils/utils"
@@ -35,6 +36,13 @@ func CreateLog(c *fiber.Ctx) error {
 		return errorutil.Response(c, fiber.StatusBadRequest, errors.Validator, utils.ValidatorErrors(err))
 	}
 
+	// Check if app exists.
+	if available, err := services.IsAppAvailable(log.AppName); err != nil {
+		return errorutil.Response(c, fiber.StatusInternalServerError, errorutil.QueryError, err.Error())
+	} else if !available {
+		return errorutil.Response(c, fiber.StatusBadRequest, errors.AppExists, "AppName does not exist.")
+	}
+
 	// Save log to database.
 	result := database.Pg.Create(&log)
 	if result.Error != nil {
@@ -53,6 +61,7 @@ func GetLogs(c *fiber.Ctx) error {
 		"id":          true,
 		"level":       true,
 		"environment": true,
+		"app_name":    true,
 		"version":     true,
 		"created_at":  true,
 		"route":       true,

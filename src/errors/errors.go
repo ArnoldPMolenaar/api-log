@@ -6,5 +6,6 @@ const (
 	Validator = "validator"
 	CreateLog = "createLog"
 	GetLogs   = "getLogs"
+	AppExists = "appExists"
 	// Add more error codes as needed.
 )
