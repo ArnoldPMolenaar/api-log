@@ -1,4 +1,4 @@
-FROM golang:1.23-alpine
+FROM golang:1.25-alpine
 LABEL authors="Arnold Molenaar <arnold.molenaar@webmi.nl> (https://arnoldmolenaar.nl/)"
 
 # Install libvips

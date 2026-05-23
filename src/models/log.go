@@ -1,20 +1,21 @@
 package models
 
 import (
+	"database/sql"
 	"time"
 )
 
 type Log struct {
-	ID          uint      `gorm:"primaryKey" json:"id"`
-	Level       string    `gorm:"not null" json:"level"`
-	Environment string    `gorm:"not null" json:"environment"`
-	AppName     *string   `gorm:"null" json:"appName"`
-	Version     string    `gorm:"not null" json:"version"`
-	CreatedAt   time.Time `json:"createdAt"`
-	Route       *string   `gorm:"null" json:"route"`
-	Message     string    `gorm:"not null" json:"message"`
-	Exception   *string   `gorm:"null" json:"exception"`
-	IpAddress   *string   `gorm:"null" json:"ipAddress"`
+	ID          uint           `gorm:"primaryKey"`
+	Level       string         `gorm:"not null"`
+	Environment string         `gorm:"not null"`
+	AppName     sql.NullString `gorm:"null"`
+	Version     string         `gorm:"not null"`
+	CreatedAt   time.Time
+	Route       sql.NullString `gorm:"null"`
+	Message     string         `gorm:"not null"`
+	Exception   sql.NullString `gorm:"null"`
+	IpAddress   sql.NullString `gorm:"null"`
 
 	LogLevel LogLevel `gorm:"constraint:OnUpdate:CASCADE,OnDelete:RESTRICT;foreignKey:Level;references:Name" json:"-"`
 	App      *App     `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;foreignKey:AppName;references:Name" json:"-"`

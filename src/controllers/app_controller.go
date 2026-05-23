@@ -6,15 +6,15 @@ import (
 	"api-log/main/src/services"
 	errorutil "github.com/ArnoldPMolenaar/api-utils/errors"
 	"github.com/ArnoldPMolenaar/api-utils/utils"
-	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v3"
 )
 
 // CreateApp method to create an app.
-func CreateApp(c *fiber.Ctx) error {
+func CreateApp(c fiber.Ctx) error {
 	// Parse the request.
 	request := requests.CreateApp{}
-	if err := c.BodyParser(&request); err != nil {
-		return errorutil.Response(c, fiber.StatusBadRequest, errorutil.BodyParse, err.Error())
+	if err := c.Bind().Body(&request); err != nil {
+		return errorutil.Response(c, fiber.StatusBadRequest, errorutil.BodyParse, err)
 	}
 
 	// Validate document fields.

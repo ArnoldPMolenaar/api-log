@@ -3,7 +3,7 @@ package routes
 import (
 	"api-log/main/src/controllers"
 	"github.com/ArnoldPMolenaar/api-utils/middleware"
-	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v3"
 )
 
 // PrivateRoutes func for describe group of private routes.
